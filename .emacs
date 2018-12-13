@@ -116,6 +116,7 @@
  '(custom-safe-themes
    (quote
     ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" default)))
+ '(helm-buffers-truncate-lines nil)
  '(neo-auto-indent-point nil)
  '(neo-autorefresh nil)
  '(neo-confirm-change-root (quote off-p))
@@ -126,7 +127,7 @@
  '(neo-theme (quote classic))
  '(neo-vc-integration (quote (face)))
  '(neo-window-fixed-size nil)
- '(neo-window-width 35)
+ '(neo-window-width 30)
  '(package-selected-packages
    (quote
     (markdown-mode groovy-mode dockerfile-mode docker prettier-js helm-flx helm-fuzzier all-the-icons floobits magit helm-ag neotree jsx-mode js2-mode monokai-theme color-theme-sanityinc-solarized multiple-cursors git-gutter-fringe tide flycheck use-package)))
@@ -136,7 +137,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#272822" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :family "Fira Code")))))
+ '(default ((t (:inherit nil :stipple nil :background "#272822" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :family "Fira Code"))))
+)
 
 (autoload 'javascript-mode "javascript-mode" "javascript mode" t nil)
 (autoload 'php-mode "php-mode" "php mode" t)
@@ -470,3 +472,10 @@ buffer in current window."
  (lambda() (setq show-trailing-whitespace nil)))
 
 (setq smerge-command-prefix "\C-cv")
+
+ (defun helm-buffer-face-mode ()
+   "Helm buffer face"
+   (interactive)
+   (with-helm-buffer
+     (setq line-spacing 2)
+     (buffer-face-set '(:family "Fira Mono" :height 80))))
