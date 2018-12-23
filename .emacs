@@ -455,7 +455,7 @@ buffer in current window."
   (text-scale-set 0)
   (split-window-right)
   (other-window 1 nil)
-  (term "/usr/bin/fish")
+  (ansi-term "/usr/bin/fish")
   (text-scale-set -2)
   (toggle-window-dedicated)
   (message "test")
@@ -479,3 +479,9 @@ buffer in current window."
    (with-helm-buffer
      (setq line-spacing 2)
      (buffer-face-set '(:family "Fira Mono" :height 80))))
+
+
+(use-package avy
+  :ensure t
+  :bind
+  ("M-S" . avy-goto-char))
