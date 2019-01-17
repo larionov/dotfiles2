@@ -22,7 +22,7 @@
 [sequence]
 [core]
 	excludesfile = /home/larionov/.gitignore_global
-	editor = emacs
+	editor = emacs -nw
 [merge]
 	conflictStyle = diff3
 [alias]
