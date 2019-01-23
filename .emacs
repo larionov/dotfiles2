@@ -84,10 +84,134 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (avy magit use-package))))
+ '(package-selected-packages
+   (quote
+    (groovy-mode editorconfig ranger projectile-speedbar sr-speedbar speedbar avy magit use-package)))
+ '(speedbar-show-unknown-files t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(setq create-lockfiles nil)
+(use-package "monokai-theme" :ensure t)
+
+;; Helm
+(use-package helm
+  :ensure t
+  :init
+  (setq helm-M-x-fuzzy-match t
+  helm-mode-fuzzy-match t
+  helm-buffers-fuzzy-matching t
+  helm-recentf-fuzzy-match t
+  helm-locate-fuzzy-match t
+  helm-semantic-fuzzy-match t
+  helm-imenu-fuzzy-match t
+  helm-completion-in-region-fuzzy-match t
+  helm-candidate-number-list 150
+  helm-split-window-in-side-p t
+  helm-move-to-line-cycle-in-source t
+  helm-echo-input-in-header-line t
+  helm-autoresize-max-height 0
+  helm-autoresize-min-height 20)
+  :config
+  (helm-mode 1))
+
+(require 'helm-config)
+(helm-mode 1)
+(define-key global-map [remap find-file] 'helm-find-files)
+(define-key global-map [remap occur] 'helm-occur)
+(define-key global-map [remap list-buffers] 'helm-buffers-list)
+(define-key global-map [remap dabbrev-expand] 'helm-dabbrev)
+(define-key global-map [remap execute-extended-command] 'helm-M-x)
+(unless (boundp 'completion-in-region-function)
+  (define-key lisp-interaction-mode-map [remap completion-at-point] 'helm-lisp-completion-at-point)
+  (define-key emacs-lisp-mode-map       [remap completion-at-point] 'helm-lisp-completion-at-point))
+
+(defun cljs-node-repl ()
+  (interactive)
+  (inf-clojure "java -cp cljs.jar clojure.main ~/elisp/repl.clj"))
+
+(use-package "helm-projectile"
+  :ensure t
+  :config (helm-projectile-on)
+)
+(use-package "helm-ag" :ensure t)
+(use-package "projectile"
+  :ensure t
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
+)
+(global-set-key (kbd "C-S-f") 'projectile-ag)
+
+(use-package helm-fuzzier
+  :ensure t
+  :init
+    (helm-fuzzier-mode 1)
+
+    )
+(use-package helm-flx
+  :ensure t
+  :init
+  (helm-flx-mode +1)
+  (setq helm-flx-for-helm-find-files t ;; t by default
+      helm-flx-for-helm-locate t) ;; nil by default
+  )
+
+ (defun helm-buffer-face-mode ()
+   "Helm buffer face"
+   (interactive)
+   (with-helm-buffer
+     (setq line-spacing 2)
+     (buffer-face-set '(:family "Fira Mono" :height 80))))
+
+(use-package ranger :ensure t)
+(ranger-override-dired-mode t)
+(load-theme 'monokai t)
+
+(use-package web-mode :ensure t)
+(use-package flycheck :ensure t)
+(use-package tide
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+;; enable typescript-tslint checker
+(flycheck-add-mode 'typescript-tslint 'web-mode)
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))

@@ -267,6 +267,10 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 exec_always --no-startup-id pasystray
 
+#exec flameshot config -t true -s true -a true
+#exec flameshot
+#exec redshift-gtk
+
 bindsym $mod+grave		exec --no-startup-id ~/.scripts/dmenuunicode
 exec --no-startup-id i3-battery-popup -n
 

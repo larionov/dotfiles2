@@ -19,7 +19,7 @@ end
 
 set -gx PATH /home/larionov/Software/flutter/bin $PATH
 
-# nvm use 10 > /dev/null
+nvm use 10 > /dev/null
 
 alias config='/usr/bin/git --git-dir=/home/larionov/.cfg/ --work-tree=/home/larionov'
 

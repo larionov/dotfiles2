@@ -8,7 +8,7 @@ brightness_day="100"
 brightness_transition="50"
 brightness_night="10"
 # Set fade time for changes to one minute
-fade_time=60000
+fade_time=0
 
 case $1 in
 	period-changed)

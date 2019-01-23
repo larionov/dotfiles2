@@ -1,0 +1,1 @@
+/home/larionov/.config/fisherman/nvm/completions/nvm.fish

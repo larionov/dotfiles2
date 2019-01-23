@@ -14,12 +14,11 @@ udiskie &
 >> /dev/null which nm-applet && nm-applet &
 
 i3-regenerate
-exec dbus-launch i3
-
-exec xset r rate 300 60
-exec setxkbmap -option compose:ralt
+exec i3
 
 alias config='/usr/bin/git --git-dir=/home/larionov/.cfg/ --work-tree=/home/larionov
 
 ulimit -n 8128
+
+dex -a &
 

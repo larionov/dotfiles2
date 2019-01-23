@@ -1,0 +1,1 @@
+/home/larionov/.config/fisherman/bass/functions/bass.fish
