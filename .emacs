@@ -86,7 +86,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (groovy-mode editorconfig ranger projectile-speedbar sr-speedbar speedbar avy magit use-package)))
+    (yaml-mode haskell-mode haskell-emacs groovy-mode editorconfig ranger projectile-speedbar sr-speedbar speedbar avy magit use-package)))
  '(speedbar-show-unknown-files t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -215,3 +215,8 @@
   :ensure t
   :config
   (editorconfig-mode 1))
+
+(use-package speedbar :ensure t)
+
+(use-package haskell-emacs :ensure t)
+(use-package haskell-mode :ensure t)

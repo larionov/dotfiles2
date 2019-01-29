@@ -1,3 +1,11 @@
+URxvt.perl-ext-common: font-size
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-S-Up:   font-size:incglobal
+URxvt.keysym.C-S-Down: font-size:decglobal
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-slash:  font-size:show
+
 URxvt*background: #1b1b1b
 URxvt*foreground: #cccaca
      
@@ -66,3 +74,18 @@ URxvt*scrollWithBuffer: true
 
 ! scroll back to the bottom on keypress
 URxvt*scrollTtyKeypress: true
+
+URxvt*saveLines: 12000
+URxvt*scrollstyle:plain
+!! URxvt*scrollBar: false
+!! URxvt*scrollBar: true
+URxvt*cursorBlink: true
+!! URxvt*cursorUnderline: true
+URxvt*scrollBar_floating: true
+!!URxvt*skipBuiltinGlyphs: true # urxvt line drawing glyphs are generally better
+URxvt*scrollBar_right: true
+!!URxvt*scrollColor: #586e75
+URxvt*scrollColor: S_base02
+!! URxvt.scrollstyle: rxvt
+URxvt*urgentOnBell: true
+URxvt*termName: xterm-256color

@@ -1,1 +1,0 @@
-/home/larionov/.config/fisherman/nvm/functions/npm.fish
