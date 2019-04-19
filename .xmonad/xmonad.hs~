@@ -1241,7 +1241,7 @@ myKeys conf = let
 --    , ("M-/"                    , addName "On-screen keys"                  $ spawn "killall screenkey &>/dev/null || screenkey --no-systray")
 --    , ("M-S-/"                  , addName "On-screen keys settings"         $ spawn "screenkey --show-settings")
     , ("M1-p"                   , addName "Capture screen"                  $ spawn "screenshot" )
-    , ("M1-S-p"                 , addName "Capture screen - area select"    $ spawn "flameshot gui" )
+    , ("M1-S-p"                 , addName "Capture screen - area select"    $ spawn "screenshot area" )
     , ("M1-r"                   , addName "Record screen"                   $ spawn "screencast" )
     , ("M1-S-r"                 , addName "Record screen - area select"     $ spawn "screencast area" )
     ] ^++^

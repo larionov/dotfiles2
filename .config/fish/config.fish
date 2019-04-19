@@ -38,3 +38,4 @@ else
 end
 
 alias config='/usr/bin/git --git-dir=/home/larionov/.cfg/ --work-tree=/home/larionov'
+#nvm use 10 > /dev/null
