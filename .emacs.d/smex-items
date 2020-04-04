@@ -1,0 +1,17 @@
+
+;; ----- smex-history -----
+(
+ hl-line-mode
+ mk-highlight-line-mode
+ ag
+ cd
+ 5x5
+ arp
+ dbx
+)
+
+;; ----- smex-data -----
+(
+ (mk-highlight-line-mode . 1)
+ (hl-line-mode . 1)
+)
