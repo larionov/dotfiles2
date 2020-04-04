@@ -27,3 +27,4 @@
 	conflictStyle = diff3
 [alias]
 	adog = log --all --decorate --oneline --graph
+	rb = "asp export linux() {; git rebase -i \"$(git merge-base dev) \" }; a"

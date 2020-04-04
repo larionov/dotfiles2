@@ -19,7 +19,7 @@
 {-|
 
  GENERAL
- 
+
  * look into X.H.Scripts -- there are things I want to run at startup, for example
  * X.U.SpawnNamedPipe? xmobars. multiple screens.
  * X.U.WindowState
@@ -44,7 +44,7 @@
  * audio tweaking ... volume working in all cases? output selected intelligently
  * ssd cloning via btrfs
  * go through sections of https://wiki.archlinux.org/index.php/List_of_applications and identify category selections, adding them to personal wiki
- 
+
  ACTIVE
 
  * try out xmonad.layout.Hidden
@@ -86,7 +86,7 @@
  * any utility in XMonad-Hooks-ServerMode (tested briefly, couldn't get it working properly)
  * work on my handling of x selection for utility functions ... timer/delay issue?
 
- DONE 
+ DONE
 
  * DynamicWorkspaces ... will DynamicProjects replace it entirely? Do I not need it
  * keybindings for unmerge are weird... sublayout not great for what might be a common op
@@ -260,7 +260,7 @@ import XMonad.Layout.NoBorders
 -- import XMonad.Layout.TrackFloating
 -- testing
 -- import XMonad.Hooks.ServerMode
--- import XMonad.Actions.Commands 
+-- import XMonad.Actions.Commands
 -- import Control.Concurrent (threadDelay)
 
 ------------------------------------------------------------------------}}}
@@ -276,7 +276,7 @@ main = do
 
     -- for taffybar, add pagerHints below
 
-    xmonad 
+    xmonad
         $ dynamicProjects projects
         $ withNavigation2DConfig myNav2DConf
         -- $ withUrgencyHook NoUrgencyHook
@@ -286,7 +286,7 @@ main = do
         $ myConfig xmproc
 
 myConfig p = def
-        { borderWidth        = border
+        { borderWidth        = Main.border
         , clickJustFocuses   = myClickJustFocuses
         , focusFollowsMouse  = myFocusFollowsMouse
         , normalBorderColor  = myNormalBorderColor
@@ -408,8 +408,8 @@ projects =
 
 --myTerminal          = "terminator"
 --myTerminalClass     = "Terminator"
-myTerminal          = "urxvt"
-myAltTerminal       = "cool-retro-term"
+myTerminal          = "kitty"
+myAltTerminal       = "urxvt"
 myBrowser           = "browser" -- chrome with WS profile dirs
 myBrowserClass      = "chromium"
 myStatusBar         = "xmobar -x0 /home/larionov/.xmonad/xmobar.conf"
@@ -484,7 +484,7 @@ scratchpads =
     ,   (NS "plex"  plexCommand isPlex defaultFloating)
     ,   (NS "console"  myConsole isConsole nonFloating)
     ,   (NS "xawtv" "xawtv" (resource =? "xawtv") (customFloating $ W.RationalRect (2/3) (1/6) (1/5) (1/3)) )
-    ] 
+    ]
 
 ------------------------------------------------------------------------}}}
 -- Theme                                                                {{{
@@ -781,7 +781,7 @@ myLayoutHook = showWorkspaceName
     --  myLayout = addTabs shrinkText def
     --           $ subLayout [0,1,2] (Simplest ||| Tall 1 0.2 0.5 ||| Circle)
     --                    $ Tall 1 0.2 0.5 ||| Full
-   
+
     -- this is a flexible sublayout layout that has only one container
     -- layout style (depending on screen)
     --     flexiSub = named "Flexi SubLayouts"
@@ -834,7 +834,7 @@ myLayoutHook = showWorkspaceName
                   -- Using "Full" here (instead of Simplest) will retain the
                   -- tabbed sublayout structure and allow paging through each
                   -- group/window in full screen mode. However my preference
-                  -- is to just see all the windows as tabs immediately.  
+                  -- is to just see all the windows as tabs immediately.
                   -- Using "Simplest" here will do this: display all windows
                   -- as tabs across the top, no "paging" required. However
                   -- this is misleading as the sublayouts are of course still
@@ -860,7 +860,7 @@ myLayoutHook = showWorkspaceName
               $ mySpacing
               $ myGaps
               $ ResizableTall 1 (1/300) (2/3) []
-              
+
     simpleThree = named "Three Col"
               $ avoidStruts
               $ addTopBar
@@ -1133,7 +1133,7 @@ showKeybindings x = addName "Show Keybindings" $ io $ do
     hClose h
     return ()
 
--- some of the structure of the following cribbed from 
+-- some of the structure of the following cribbed from
 -- https://github.com/SimSaladin/configs/blob/master/.xmonad/xmonad.hs
 -- https://github.com/paul-axe/dotfiles/blob/master/.xmonad/xmonad.hs
 -- https://github.com/pjones/xmonadrc (+ all the dyn project stuff)
@@ -1165,7 +1165,7 @@ getSortByIndexNoSP =
         fmap (.namedScratchpadFilterOutWorkspace) getSortByIndex
 
 -- toggle any workspace but scratchpad
-myToggle = windows $ W.view =<< W.tag . head . filter 
+myToggle = windows $ W.view =<< W.tag . head . filter
         ((\x -> x /= "NSP" && x /= "SP") . W.tag) . W.hidden
 
 myKeys conf = let
@@ -1213,7 +1213,7 @@ myKeys conf = let
     [ ("M-<Backspace>"                    , addName "Restart XMonad"                  $ spawn "xmonad --restart")
     , ("M-C-<Backspace>"                  , addName "Rebuild & restart XMonad"        $ spawn "xmonad --recompile && xmonad --restart")
     , ("M-C-q"                  , addName "Quit XMonad"                     $ confirmPrompt hotPromptTheme "Quit XMonad" $ io (exitWith ExitSuccess))
-    , ("M-x"                    , addName "Lock screen"                     $ spawn "xset s activate")
+    , ("M-x"                    , addName "Lock screen"                     $ spawn "xscreensaver-command -lock") -- spawn "xset s activate")
     , ("M-<F4>"                    , addName "Print Screen"                    $ return ())
   --, ("M-F1"                   , addName "Show Keybindings"                $ return ())
     ] ^++^
@@ -1221,8 +1221,8 @@ myKeys conf = let
     subKeys "FunctionKeys"
     [ ("<XF86MonBrightnessUp>"  , addName "Brightness Up"                   $ spawn "xbacklight -inc 5")
     , ("<XF86MonBrightnessDown>", addName "Brightness Down"                 $ spawn "xbacklight -dec 5")
-    , ("<XF86AudioRaiseVolume>" , addName "Volume Up"                       $ spawn "amixer -D pulse sset Master '5%+'")
-    , ("<XF86AudioLowerVolume>" , addName "Volume Down"                     $ spawn "amixer -D pulse sset Master '5%-'")
+    , ("<XF86AudioRaiseVolume>" , addName "Volume Up"                       $ spawn "pactl set-sink-volume 0 +5%") --spawn "amixer -D pulse sset Master '5%+'")
+    , ("<XF86AudioLowerVolume>" , addName "Volume Down"                     $ spawn "pactl set-sink-volume 0 -5%") --spawn "amixer -D pulse sset Master '5%-'")
     , ("<XF86AudioMute>"        , addName "Volume Mute"                     $ spawn "amixer -D pulse set Master toggle")
     , ("<XF86AudioMicMute>"     , addName "Mic Mute"                        $ spawn "amixer -D pulse sset Capture toggle")
     ] ^++^
@@ -1280,7 +1280,7 @@ myKeys conf = let
     , ("M-p"                    , addName "Hide window to stack"            $ withFocused hideWindow)
     , ("M-S-p"                  , addName "Restore hidden window (FIFO)"    $ popOldestHiddenWindow)
 
-    , ("M-b"                    , addName "Promote"                         $ promote) 
+    , ("M-b"                    , addName "Promote"                         $ promote)
 
     , ("M-g"                    , addName "Un-merge from sublayout"         $ withFocused (sendMessage . UnMerge))
     , ("M-S-g"                  , addName "Merge all into sublayout"        $ withFocused (sendMessage . MergeAll))
@@ -1293,22 +1293,22 @@ myKeys conf = let
 
     , ("M-'"                    , addName "Navigate tabs D"                 $ bindOn LD [("Tabs", windows W.focusDown), ("", onGroup W.focusDown')])
     , ("M-;"                    , addName "Navigate tabs U"                 $ bindOn LD [("Tabs", windows W.focusUp), ("", onGroup W.focusUp')])
-    , ("C-'"                    , addName "Swap tab D"                      $ windows W.swapDown)
-    , ("C-;"                    , addName "Swap tab U"                      $ windows W.swapUp)
+    , ("M-C-'"                    , addName "Swap tab D"                      $ windows W.swapDown)
+    , ("M-C-;"                    , addName "Swap tab U"                      $ windows W.swapUp)
 
     -- ComboP specific (can remove after demo)
-    , ("M-C-S-m"                , addName "Combo swap"                      $ sendMessage $ SwapWindow)
+    --, ("M-C-S-m"                , addName "Combo swap"                      $ sendMessage $ SwapWindow)
     ]
 
     ++ zipM' "M-"               "Navigate window"                           arrowKeys dirs windowGo True
     -- ++ zipM' "M-S-"               "Move window"                               dirKeys dirs windowSwap True
     -- TODO: following may necessitate use of a "passthrough" binding that can send C- values to focused w
-    ++ zipM' "C-S-"             "Move window"                               arrowKeys dirs windowSwap True
-    ++ zipM  "M-C-"             "Merge w/sublayout"                         arrowKeys dirs (sendMessage . pullGroup)
+    -- ++ zipM' "C-S-"             "Move window"                               arrowKeys dirs windowSwap True
+    -- ++ zipM  "M-C-"             "Merge w/sublayout"                         arrowKeys dirs (sendMessage . pullGroup)
 --    ++ zipM' "M-"               "Navigate screen"                           arrowKeys dirs screenGo True
 --    -- ++ zipM' "M-S-"             "Move window to screen"                     arrowKeys dirs windowToScreen True
---    ++ zipM' "M-C-"             "Move window to screen"                     arrowKeys dirs windowToScreen True
---    ++ zipM' "M-S-"             "Swap workspace to screen"                  arrowKeys dirs screenSwap True
+    ++ zipM' "M-C-"             "Move window to screen"                     arrowKeys dirs windowToScreen True
+    ++ zipM' "M-S-"             "Swap workspace to screen"                  arrowKeys dirs screenSwap True
 
     ) ^++^
 
@@ -1371,10 +1371,12 @@ myKeys conf = let
     , ("M-S-f"                  , addName "Fake fullscreen"             $ sequence_ [ (P.sendKey P.noModMask xK_F11)
                                                                                     , (tryMsgR (ExpandTowards L) (Shrink))
                                                                                     , (tryMsgR (ExpandTowards R) (Expand)) ])
-    , ("C-S-h"                  , addName "Ctrl-h passthrough"          $ P.sendKey controlMask xK_h)
-    , ("C-S-j"                  , addName "Ctrl-j passthrough"          $ P.sendKey controlMask xK_j)
-    , ("C-S-k"                  , addName "Ctrl-k passthrough"          $ P.sendKey controlMask xK_k)
-    , ("C-S-l"                  , addName "Ctrl-l passthrough"          $ P.sendKey controlMask xK_l)
+    --    , ("C-S-h"                  , addName "Ctrl-h passthrough"          $ P.sendKey controlMask xK_h)
+    --    , ("C-S-j"                  , addName "Ctrl-j passthrough"          $ P.sendKey controlMask xK_j)
+    --    , ("C-S-k"                  , addName "Ctrl-k passthrough"          $ P.sendKey controlMask xK_k)
+    --    , ("C-S-l"                  , addName "Ctrl-l passthrough"          $ P.sendKey controlMask xK_l)
+        , ("C-S-c"                  , addName "Ctrl-shift-c passthrough"          $ P.sendKey (controlMask .|. shiftMask) xK_c)
+    --
     ] ^++^
 
     -----------------------------------------------------------------------
@@ -1419,13 +1421,13 @@ myKeys conf = let
     --
     -- The "sequence_" wrapper is needed because for some reason the windows weren't resizing till
     -- I moved to a different window or refreshed, so I added that here. Shrug.
-    
+
     -- mnemonic: less than / greater than
     --, ("M4-<L>"       , addName "Expand (L on BSP)"     $ sequence_ [(tryMessage_ (ExpandTowards L) (Expand)), refresh])
 
 --      ("C-<L>"                  , addName "Expand (L on BSP)"           $ tryMsgR (ExpandTowards L) (Shrink))
 --    , ("C-<R>"                  , addName "Expand (R on BSP)"           $ tryMsgR (ExpandTowards R) (Expand))
---    , ("C-<U>"                  , addName "Expand (U on BSP)"           $ tryMsgR (ExpandTowards U) (MirrorShrink))
+--    , ("C-<U>"                  , addName "d (U on BSP)"           $ tryMsgR (ExpandTowards U) (MirrorShrink))
 --    , ("C-<D>"                  , addName "Expand (D on BSP)"           $ tryMsgR (ExpandTowards D) (MirrorExpand))
 --
 --    , ("C-S-<L>"                , addName "Shrink (L on BSP)"           $ tryMsgR (ShrinkFrom R) (Shrink))
@@ -1456,30 +1458,32 @@ myKeys conf = let
     -- sublayout specific (unused)
     --  ("M4-C-S-."               , addName "toSubl Shrink"               $ toSubl Shrink)
     --, ("M4-C-S-,"               , addName "toSubl Expand"               $ toSubl Expand)
-    ]
-		where
-			toggleCopyToAll = wsContainingCopies >>= \ws -> case ws of
-							[] -> windows copyToAll
-							_ -> killAllOtherCopies
+    ] ^++^
 
     -----------------------------------------------------------------------
     -- Screens
     -----------------------------------------------------------------------
---    subKeys "Screens"
---    ([("M-C-<Right>", addName "Focus prev screen" prevScreen)
---    , ("M-C-<Left>" , addName "Focus next screen" nextScreen)
---    ]
---    ++ zipMod "Focus screen"                         screenKeys [0..] "M-"    (screenAction W.view)
---    ++ zipMod "Move client to screen"                screenKeys [0..] "M-S-"  (screenAction W.shift)
---    ++ zipMod "Swap workspace with screen"           screenKeys [0..] "M-M1-" (screenAction W.greedyView)
---    ++ zipMod "Swap workspace with and focus screen" screenKeys [0..] "M-C-"  (\s -> screenAction W.greedyView s >> screenAction W.view s)
---    ) ^++^
+    subKeys "Screens"
+    (
+    [
+        ("M-C-S-<Right>", addName "Focus prev screen" prevScreen)
+      , ("M-C-S-<Left>" , addName "Focus next screen" nextScreen)
+    ]
+      -- ++ zipMod "Focus screen"                         screenKeys [0..] "M-"    (screenAction W.view)
+      -- ++ zipMod "Move client to screen"                screenKeys [0..] "M-S-"  (screenAction W.shift)
+      -- ++ zipMod "Swap workspace with screen"           screenKeys [0..] "M-M1-" (screenAction W.greedyView)
+      -- ++ zipMod "Swap workspace with and focus screen" screenKeys [0..] "M-C-"  (\s -> screenAction W.greedyView s >> screenAction W.view s)
+    )
+    where
+      toggleCopyToAll = wsContainingCopies >>= \ws -> case ws of
+        [] -> windows copyToAll
+	_ -> killAllOtherCopies
 
 --    subKeys "Media Controls"
 --    [
 --    ("<XF86AudioMicMute>"      , addName "Mic Mute"                    $ spawn "notify-send mic mute")
 --    ]
-    
+
 
 -- Mouse bindings: default actions bound to mouse events
 -- Includes window snapping on move/resize using X.A.FloatSnap
@@ -1528,7 +1532,7 @@ myStartupHook = do
     -- init-tray kills and restarts stalone tray, hence just "spawn" so it
     -- runs on restart and will suffice to reposition tray on display changes
     -- TODO: evaluate moving to a "restart tray only" option on display change
-    spawn     "$HOME/bin/wm/init-tray"
+--    spawn     "$HOME/bin/wm/init-tray"
 
     setDefaultCursor xC_left_ptr
 
@@ -1570,8 +1574,8 @@ myLogHook h = do
         , ppWsSep               = " "
         , ppLayout              = xmobarColor yellow ""
         , ppOrder               = id
-        , ppOutput              = hPutStrLn h  
-        , ppSort                = fmap 
+        , ppOutput              = hPutStrLn h
+        , ppSort                = fmap
                                   (namedScratchpadFilterOutWorkspace.)
                                   (ppSort def)
                                   --(ppSort defaultPP)
@@ -1581,9 +1585,9 @@ myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.85
     , (className =? "Terminator") <&&> (isUnfocused) --> opacity 0.9
-    , (className =? "URxvt") <&&> (isUnfocused) --> opacity 0.9
+    , (className =? "Kitty") <&&> (isUnfocused) --> opacity 0.9
     , fmap ("Google" `isPrefixOf`) className --> opaque
-    , isDialog --> opaque 
+    , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
     --, isFloating  --> opacity 0.75
     ]
@@ -1594,7 +1598,7 @@ myFadeHook = composeAll
 
 
 ---------------------------------------------------------------------------
--- Urgency Hook                                                            
+-- Urgency Hook
 ---------------------------------------------------------------------------
 -- from https://pbrisbin.com/posts/using_notify_osd_for_xmonad_notifications/
 data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
@@ -1626,6 +1630,7 @@ myManageHook =
         manageSpecific = composeOne
             [ resource =? "desktop_window" -?> doIgnore
             , resource =? "stalonetray"    -?> doIgnore
+            , resource =? "Emulator"    -?> doFloat
             , resource =? "vlc"    -?> doFloat
             , resource =? trelloResource -?> doFullFloat
             , resource =? trelloWorkResource -?> doFullFloat
@@ -1638,6 +1643,7 @@ myManageHook =
             , isRole =? gtkFile  -?> forceCenterFloat
             , isDialog -?> doCenterFloat
             , isRole =? "pop-up" -?> doCenterFloat
+            --, stringProperty "_NET_WM_NAME" =? "Emulator" --> doFloat
             , isInProperty "_NET_WM_WINDOW_TYPE"
                            "_NET_WM_WINDOW_TYPE_SPLASH" -?> doCenterFloat
             , resource =? "console" -?> tileBelowNoFocus
