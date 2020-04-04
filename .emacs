@@ -85,7 +85,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(helm-ag-ignore-patterns (quote ("node_modules")))
  '(monokai-background "#151515")
  '(monokai-highlight "#19483E")
  '(org-support-shift-select t)
@@ -114,113 +113,19 @@
 (setq create-lockfiles nil)
 (use-package "monokai-theme" :ensure t)
 
-;; Helm
-(use-package helm
-  :ensure t
-  :defer t
-  :init
-  (setq helm-M-x-fuzzy-match t
-  helm-mode-fuzzy-match t
-  helm-buffers-fuzzy-matching t
-  helm-recentf-fuzzy-match t
-  helm-locate-fuzzy-match t
-  helm-semantic-fuzzy-match t
-  helm-imenu-fuzzy-match t
-  helm-completion-in-region-fuzzy-match t
-  helm-candidate-number-list 150
-  helm-split-window-in-side-p t
-  helm-move-to-line-cycle-in-source t
-  helm-echo-input-in-header-line t
-  helm-autoresize-max-height 0
-  helm-autoresize-min-height 20)
-  :config
-  (helm-mode 1))
-(use-package flx :ensure t)
 
-;; Better matching for HELM
-(with-eval-after-load 'helm
-  ;; make sure you have flx installed
-  (require 'flx)
-  ;; this is a bit hackish, ATM, redefining functions I don't own
-  (defvar helm-flx-cache (flx-make-string-cache #'flx-get-heatmap-str))
-
-  (defun helm-score-candidate-for-pattern (candidate pattern)
-    (or (car (flx-score candidate pattern helm-flx-cache)) 0))
-
-  (defun helm-fuzzy-default-highlight-match (candidate)
-    (let* ((pair (and (consp candidate) candidate))
-            (display (if pair (car pair) candidate))
-            (real (cdr pair)))
-      (with-temp-buffer
-        (insert display)
-        (goto-char (point-min))
-        (if (string-match-p " " helm-pattern)
-          (cl-loop with pattern = (split-string helm-pattern)
-            for p in pattern
-            do (when (search-forward p nil t)
-                 (add-text-properties
-                   (match-beginning 0) (match-end 0) '(face helm-match))))
-          (cl-loop with pattern = (cdr (flx-score display
-                                         helm-pattern helm-flx-cache))
-            for index in pattern
-            do (add-text-properties
-                 (1+ index) (+ 2 index) '(face helm-match))))
-        (setq display (buffer-string)))
-      (if real (cons display real) display))))
-
-
-(require 'helm-config)
-(helm-mode 1)
-(define-key global-map [remap find-file] 'helm-find-files)
-(define-key global-map [remap occur] 'helm-occur)
-(define-key global-map [remap list-buffers] 'helm-buffers-list)
-(define-key global-map [remap dabbrev-expand] 'helm-dabbrev)
-(define-key global-map [remap execute-extended-command] 'helm-M-x)
-(unless (boundp 'completion-in-region-function)
-  (define-key lisp-interaction-mode-map [remap completion-at-point] 'helm-lisp-completion-at-point)
-  (define-key emacs-lisp-mode-map       [remap completion-at-point] 'helm-lisp-completion-at-point))
-
-(defun cljs-node-repl ()
-  (interactive)
-  (inf-clojure "java -cp cljs.jar clojure.main ~/elisp/repl.clj"))
-
-;(use-package "helm-projectile"
-;  :ensure t
-;  :config (helm-projectile-on)
-;)
-(use-package "perspective" :ensure t :defer t
-  :config
-  (persp-mode)
-  )
-(use-package "persp-projectile" :ensure t)
 (use-package "projectile"
   :ensure t
   :defer t
   :config
   (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
-  (define-key projectile-mode-map (kbd "C-c C-s") 'projectile-persp-switch-project)
-;;  (define-key projectile-mode-map (kbd "C-x <left>") 'projectile-previous-project-buffer)
-;;  (define-key projectile-mode-map (kbd "C-x <right>") 'projectile-next-project-buffer)
-  (projectile-register-project-type 'npm '("package.json")
-                  :compile "npm install"
-                  :test "npm test"
-                  :run "npm start"
-                  :test-suffix ".spec")
-
+  (define-key projectile-mode-map (kbd "C-c C-s") 'projectile-switch-project)
   )
 
-;(global-set-key (kbd "C-S-f") 'projectile-ag)
+(global-set-key (kbd "C-S-f") 'projectile-ag)
 
-(use-package helm-ag
-  :ensure helm-ag
-  :bind ("C-S-p" . helm-projectile-ag)
-  :commands (helm-ag helm-projectile-ag)
-  :init (setq helm-ag-insert-at-point 'symbol
-	      helm-ag-command-option "--path-to-ignore ~/.agignore"))
-
+(use-package flx :ensure t)
 (use-package flx-ido :ensure t
   :init
 ;  (ido-mode 1)
@@ -233,73 +138,21 @@
 
 (setq gc-cons-threshold 20000000)
 
-(use-package helm-fuzzier
-  :ensure t
-  :defer t
-  :init
-    (helm-fuzzier-mode 1)
+;; (use-package ranger
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;    (setq ranger-preview-file t)
+;;    (setq ranger-dont-show-binary t)
 
-    )
-(use-package helm-flx
-  :ensure t
-  :defer t
-  :init
-  (helm-flx-mode +1)
-  (setq helm-flx-for-helm-find-files t ;; t by default
-      helm-flx-for-helm-locate t) ;; nil by default
-  )
+;;   :bind
+;;   ("M-s" . ranger))
 
- (defun helm-buffer-face-mode ()
-   "Helm buffer face"
-   (interactive)
-   (with-helm-buffer
-     (setq line-spacing 2)
-     (buffer-face-set '(:family "Fira Mono" :height 80))))
-
-(use-package ranger
-  :ensure t
-  :defer t
-  :config
-   (setq ranger-preview-file t)
-   (setq ranger-dont-show-binary t)
-
-  :bind
-  ("M-s" . ranger))
-
-(ranger-override-dired-mode t)
+;; (ranger-override-dired-mode t)
 
 (load-theme 'monokai t)
 
 (use-package web-mode :ensure t)
-(use-package flycheck :ensure t)
-(use-package tide
-  :ensure t
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-	 (typescript-mode . tide-hl-identifier-mode)
-	 (before-save . tide-format-before-save)))
-
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
-  (company-mode +1))
-
-;; aligns annotation to the right hand side
-(setq company-tooltip-align-annotations t)
-
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-(require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-hook 'web-mode-hook
@@ -308,17 +161,12 @@
 	      (setup-tide-mode))
 	    (when (string-equal "tsx" (file-name-extension buffer-file-name))
 	      (setup-tide-mode))))
-;; enable typescript-tslint checker
-(flycheck-add-mode 'typescript-tslint 'web-mode)
 
 (use-package editorconfig
   :ensure t
   :defer t
   :config
   (editorconfig-mode 1))
-
-(use-package haskell-emacs :ensure t :defer t)
-(use-package haskell-mode :ensure t :defer t)
 
 (use-package vue-mode
   :ensure t
@@ -352,22 +200,12 @@
 (setq scroll-error-top-bottom t)
 (setq scroll-preserve-screen-position nil)
 
-
-
- (defun helm-buffer-face-mode ()
-   "Helm buffer face"
-   (interactive)
-   (with-helm-buffer
-     (setq line-spacing 2)
-     (buffer-face-set '(:family "Fira Mono" :height 80))))
-
 (use-package window-numbering :ensure t)
 (require 'window-numbering)
 ; highlight the window number in pink color
 
 
 (setq tab-always-indent 'complete)
-(add-to-list 'completion-styles 'initials t)
 
 (window-numbering-mode 1)
 (global-display-line-numbers-mode 1)
@@ -416,65 +254,17 @@ If the new path's directories does not exist, create them."
 (global-set-key (kbd "M-.") 'xref-find-definitions)
 
 
-;;(use-package js-mode :ensure t)
-(use-package company :ensure t)
-(use-package flycheck :ensure t)
 (use-package mmm-mode :ensure t)
 
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . tide-mode))
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . mhtml-mode))
 
-;;; runs eslint --fix on the current file after save
-;;; alpha quality -- use at your own risk
-
-(defun eslint-fix-file ()
-  (interactive)
-  (message "eslint --fixing the file" (buffer-file-name))
-  (shell-command (concat "eslint --fix " (buffer-file-name))))
-(defun prettier-fix-file ()
-  (interactive)
-  (message "prettier the file" (buffer-file-name))
-  (shell-command (concat "prettier --write " (buffer-file-name))))
-
-(defun eslint-fix-file-and-revert ()
-  (interactive)
-  (prettier-fix-file)
-  (eslint-fix-file)
-  (revert-buffer t t))
-
-(global-set-key (kbd "C-c f") 'eslint-fix-file-and-revert)
-
 (use-package clojure-mode :ensure t :defer t)
-(use-package paredit :ensure t :defer t)
 (use-package cider
   :defer t
   :ensure t
   :pin melpa-stable)
-
-(defadvice next-buffer (after avoid-messages-buffer-in-next-buffer)
-  "Advice around `next-buffer' to avoid going into the *Messages* buffer."
-  (when (string-match "^\\*.*\\*$" (buffer-name))
-    (next-buffer)))
-
-(defadvice previous-buffer (after avoid-messages-buffer-in-next-buffer)
-  "Advice around `next-buffer' to avoid going into the *Messages* buffer."
-  (when (string-match "^\\*.*\\*$" (buffer-name))
-    (previous-buffer)))
-
-;; activate the advice
-(ad-activate 'next-buffer)
-(ad-activate 'previous-buffer)
-
-(setf helm-boring-buffer-regexp-list '("\\` " "\\*helm" "\\*helm-mode"
-                                       "\\*Echo Area" "\\*Minibuf" "\\*monky-cmd-process\\*"
-                                       "\\*epc con" "\\*Compile-Log\\*" "\\*monky-process\\*"
-                                       "\\*CEDET CScope\\*" "\\*Messages\\*" "\\*Flycheck error"
-                                       "\\*.+(.+)" "elpa/.+" "tramp/.+"
-				       "\\*lsp-log\\*"
-                                       "\\*Gofmt Errors\\*" "\\*autopep8"
-                                       "\\*magit-process:" "\\*magit-diff:" "\\*anaconda-mode\\*"))
 
 (autoload 'zap-up-to-char "misc"
   "Kill up to, but not including ARGth occurrence of CHAR." t)
@@ -490,8 +280,8 @@ If the new path's directories does not exist, create them."
 (global-set-key (kbd "C-'") 'ibuffer)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+;(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+;(global-set-key (kbd "C-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
 
@@ -507,7 +297,6 @@ If the new path's directories does not exist, create them."
       save-place-file (concat user-emacs-directory "places")
       backup-directory-alist `(("." . ,(concat user-emacs-directory
 					       "backups"))))
-
 
 (use-package multiple-cursors
   :ensure t
@@ -537,7 +326,7 @@ If the new path's directories does not exist, create them."
   :defer t
   :config
   ;; Expand region (increases selected region by semantic units)
-  (global-set-key (kbd "C-'") 'er/expand-region)
+  (global-set-key (kbd "C-;") 'er/expand-region)
   )
 
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -590,7 +379,6 @@ If the new path's directories does not exist, create them."
    )
  )
 
-
 (defun evaluate-and-display-images ()
   (interactive)
   (org-ctrl-c-ctrl-c)
@@ -629,3 +417,14 @@ If the new path's directories does not exist, create them."
 (use-package all-the-icons-ibuffer
   :ensure t
   :init (all-the-icons-ibuffer-mode 1))
+
+(use-package helm
+  :ensure t)
+
+(use-package helm-ag
+  :ensure t
+  :bind ("C-S-p" . helm-projectile-ag)
+  :commands (helm-ag helm-projectile-ag)
+  :init (
+         setq helm-ag-insert-at-point 'symbol
+              helm-ag-command-option "--path-to-ignore ~/.agignore"))
