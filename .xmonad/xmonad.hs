@@ -408,8 +408,8 @@ projects =
 
 --myTerminal          = "terminator"
 --myTerminalClass     = "Terminator"
-myTerminal          = "kitty"
-myAltTerminal       = "urxvt"
+myTerminal          = "alacritty"
+myAltTerminal       = "kitty"
 myBrowser           = "browser" -- chrome with WS profile dirs
 myBrowserClass      = "chromium"
 myStatusBar         = "xmobar -x0 /home/larionov/.xmonad/xmobar.conf"

@@ -7,7 +7,6 @@
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
   (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
 )
-
 (package-initialize)
 
 ;; Bootstrap `use-package'
@@ -90,7 +89,7 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (all-the-icons-ibuffer ibuffer-projectile hydra ssh-deploy counsel swiper expand-region multiple-cursors parinfer ag flx-ido persp-projectile perspective js-mode clojure-mode company clojure-emacs clojure-emacx paredit cider window-numbering yaml-mode haskell-mode haskell-emacs groovy-mode editorconfig ranger avy magit use-package)))
+    (dired+ all-the-icons-ibuffer ibuffer-projectile hydra ssh-deploy counsel swiper expand-region multiple-cursors parinfer ag flx-ido persp-projectile perspective js-mode clojure-mode company clojure-emacs clojure-emacx paredit cider window-numbering yaml-mode haskell-mode haskell-emacs groovy-mode editorconfig ranger avy magit use-package)))
  '(safe-local-variable-values
    (quote
     ((ssh-deploy-script lambda nil
@@ -138,15 +137,16 @@
 
 (setq gc-cons-threshold 20000000)
 
-;; (use-package ranger
-;;   :ensure t
-;;   :defer t
-;;   :config
-;;    (setq ranger-preview-file t)
-;;    (setq ranger-dont-show-binary t)
+(use-package ranger
+  :ensure t
+  :defer t
+  :config
+  (setq ranger-preview-file nil)
+  (setq ranger-show-literal nil)
+  (setq ranger-dont-show-binary t)
 
-;;   :bind
-;;   ("M-s" . ranger))
+  :bind
+  ("M-s" . ranger))
 
 ;; (ranger-override-dired-mode t)
 
@@ -334,7 +334,7 @@ If the new path's directories does not exist, create them."
 (use-package swiper
   :ensure t
   :config (progn
-    (ivy-mode 1)
+    (ivy-mode 0)
     (setq ivy-use-virtual-buffers t)
     (setq enable-recursive-minibuffers t)
     ;; enable this if you want `swiper' to use it
@@ -343,6 +343,8 @@ If the new path's directories does not exist, create them."
     (global-set-key "\C-s" 'swiper)
     (global-set-key (kbd "C-c C-r") 'ivy-resume)
     (global-set-key (kbd "<f6>") 'ivy-resume)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 ))
 (use-package hydra :ensure t)
 
@@ -412,7 +414,6 @@ If the new path's directories does not exist, create them."
 )
 (global-set-key (kbd "C-c C-d") 'duplicate-line)
 (setq projectile-enable-caching t)
-
 ;; M-x all-the-icons-install-fonts
 (use-package all-the-icons-ibuffer
   :ensure t

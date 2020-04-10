@@ -1,17 +1,20 @@
 
 ;; ----- smex-history -----
 (
+ vue-mode-reparse
+ ivy-mode
+ counsel-minibuffer-history
  hl-line-mode
- mk-highlight-line-mode
  ag
  cd
  5x5
- arp
- dbx
 )
 
 ;; ----- smex-data -----
 (
  (mk-highlight-line-mode . 1)
  (hl-line-mode . 1)
+ (counsel-minibuffer-history . 2)
+ (vue-mode-reparse . 3)
+ (ivy-mode . 1)
 )
