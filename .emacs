@@ -84,22 +84,30 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(helm-ls-git-status-command (quote magit-status-internal))
  '(monokai-background "#151515")
  '(monokai-highlight "#19483E")
  '(org-support-shift-select t)
- '(package-selected-packages
-   (quote
-    (dired+ all-the-icons-ibuffer ibuffer-projectile hydra ssh-deploy counsel swiper expand-region multiple-cursors parinfer ag flx-ido persp-projectile perspective js-mode clojure-mode company clojure-emacs clojure-emacx paredit cider window-numbering yaml-mode haskell-mode haskell-emacs groovy-mode editorconfig ranger avy magit use-package)))
- '(safe-local-variable-values
-   (quote
-    ((ssh-deploy-script lambda nil
-                        (let
-                            ((default-directory ssh-deploy-root-remote))
-                          (shell-command "bash compile.sh")))
-     (ssh-deploy-on-explicit-save . 1)
-     (ssh-deploy-async . 1)
-     (ssh-deploy-root-remote . "/ssh:sandbox5:ui-qa-page/vendor/odesk/ui-components-bundle/")
-     (ssh-deploy-root-local . "/home/larionov/project/ui-components-bundle/")))))
+  '(package-selected-packages
+     (quote
+       (wgrep-ag helm-ls-git interleave org-ref quelpa rust-mode zig-mode flycheck-joker all-the-icons-ibuffer ibuffer-projectile hydra ssh-deploy counsel swiper expand-region multiple-cursors parinfer ag flx-ido persp-projectile perspective js-mode clojure-mode company clojure-emacs clojure-emacx paredit cider window-numbering yaml-mode haskell-mode haskell-emacs groovy-mode editorconfig avy magit use-package)))
+ '(projectile-completion-system (quote ivy))
+  '(projectile-globally-ignored-directories
+     (quote
+       (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "*node_modules")))
+  '(safe-local-variable-values
+     (quote
+       ((ssh-deploy-script lambda nil
+          (let
+            ((default-directory ssh-deploy-root-remote))
+            (shell-command "bash compile.sh")))
+         (ssh-deploy-on-explicit-save . 1)
+         (ssh-deploy-async . 1)
+         (ssh-deploy-root-remote . "/ssh:sandbox5:ui-qa-page/vendor/odesk/ui-components-bundle/")
+         (ssh-deploy-root-local . "/home/larionov/project/ui-components-bundle/"))))
+  '(so-long-minor-modes
+     (quote
+       (font-lock-mode display-line-numbers-mode flymake-mode flyspell-mode goto-address-mode goto-address-prog-mode hi-lock-mode highlight-changes-mode hl-line-mode linum-mode nlinum-mode prettify-symbols-mode visual-line-mode whitespace-mode diff-hl-amend-mode diff-hl-flydiff-mode diff-hl-mode dtrt-indent-mode flycheck-mode hl-sexp-mode idle-highlight-mode rainbow-delimiters-mode editorconfig-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -113,16 +121,16 @@
 (use-package "monokai-theme" :ensure t)
 
 
-(use-package "projectile"
-  :ensure t
-  :defer t
-  :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c C-s") 'projectile-switch-project)
-  )
+;; (use-package "projectile"
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;   (projectile-mode +1)
+;; ;  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
+;; ;  (define-key projectile-mode-map (kbd "C-c C-s") 'projectile-switch-project)
+;;   )
 
-(global-set-key (kbd "C-S-f") 'projectile-ag)
+;; (global-set-key (kbd "C-S-f") 'projectile-ag)
 
 (use-package flx :ensure t)
 (use-package flx-ido :ensure t
@@ -137,16 +145,16 @@
 
 (setq gc-cons-threshold 20000000)
 
-(use-package ranger
-  :ensure t
-  :defer t
-  :config
-  (setq ranger-preview-file nil)
-  (setq ranger-show-literal nil)
-  (setq ranger-dont-show-binary t)
+;; (use-package ranger
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;   (setq ranger-preview-file nil)
+;;   (setq ranger-show-literal nil)
+;;   (setq ranger-dont-show-binary t)
 
-  :bind
-  ("M-s" . ranger))
+;;   :bind
+;;   ("M-s" . ranger))
 
 ;; (ranger-override-dired-mode t)
 
@@ -156,11 +164,16 @@
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-hook 'web-mode-hook
-	  (lambda ()
-	    (when (string-equal "ts" (file-name-extension buffer-file-name))
-	      (setup-tide-mode))
-	    (when (string-equal "tsx" (file-name-extension buffer-file-name))
-	      (setup-tide-mode))))
+  (lambda ()
+    (when (string-equal "ts" (file-name-extension buffer-file-name))
+      (setup-tide-mode))
+    (when (string-equal "tsx" (file-name-extension buffer-file-name))
+      (setup-tide-mode))))
+
+(add-hook 'dired-mode-hook
+  (lambda ()
+    (local-set-key (kbd "C-s") 'isearch-forward)
+    ))
 
 (use-package editorconfig
   :ensure t
@@ -273,17 +286,37 @@ If the new path's directories does not exist, create them."
 (setq uniquify-buffer-name-style 'forward)
 
 (require 'saveplace)
+(require 'dired+)
+
 (setq-default save-place t)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-'") 'ibuffer)
+;(global-set-key (kbd "C-'") 'ibuffer)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
 ;(global-set-key (kbd "C-s") 'isearch-forward-regexp)
 ;(global-set-key (kbd "C-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
+
+(require 'dired-arrow-keys)
+(dired-arrow-keys-install)
+(global-set-key (kbd "M-s") 'dired-jump)
+(toggle-diredp-find-file-reuse-dir 1)
+
+(defun mydired-sort ()
+  "Sort dired listings with directories first."
+  (save-excursion
+    (let (buffer-read-only)
+      (forward-line 2) ;; beyond dir. header
+      (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+    (set-buffer-modified-p nil)))
+
+(defadvice dired-readin
+  (after dired-after-updating-hook first () activate)
+  "Sort dired listings with directories first before adding marks."
+  (mydired-sort))
 
 (show-paren-mode 1)
 (setq-default indent-tabs-mode nil)
@@ -331,7 +364,7 @@ If the new path's directories does not exist, create them."
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(use-package swiper
+(use-package ivy
   :ensure t
   :config (progn
     (ivy-mode 0)
@@ -339,8 +372,6 @@ If the new path's directories does not exist, create them."
     (setq enable-recursive-minibuffers t)
     ;; enable this if you want `swiper' to use it
     ;; (setq search-default-mode #'char-fold-to-regexp)
-    (global-set-key "\C-r" 'swiper)
-    (global-set-key "\C-s" 'swiper)
     (global-set-key (kbd "C-c C-r") 'ivy-resume)
     (global-set-key (kbd "<f6>") 'ivy-resume)
     (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -391,17 +422,17 @@ If the new path's directories does not exist, create them."
 (global-set-key (kbd "C-c C-u")
                 `evaluate-and-display-images)
 
-(use-package ibuffer-projectile
-  :ensure t
-  :init
-  (add-hook 'ibuffer-hook
-            (lambda ()
-              (ibuffer-projectile-set-filter-groups)
-              (unless (eq ibuffer-sorting-mode 'alphabetic)
-                (ibuffer-do-sort-by-project-name)
-                (ibuffer-do-sort-by-alphabetic)
-                )))
-  )
+;; (use-package ibuffer-projectile
+;;   :ensure t
+;;   :init
+;;   (add-hook 'ibuffer-hook
+;;             (lambda ()
+;;               (ibuffer-projectile-set-filter-groups)
+;;               (unless (eq ibuffer-sorting-mode 'alphabetic)
+;;                 (ibuffer-do-sort-by-project-name)
+;;                 (ibuffer-do-sort-by-alphabetic)
+;;                 )))
+;;   )
 
 (defun duplicate-line()
   (interactive)
@@ -422,6 +453,14 @@ If the new path's directories does not exist, create them."
 (use-package helm
   :ensure t)
 
+;; (use-package ag
+;;   :ensure t
+;;   :bind ("C-S-p" . ag-project)
+;;   )
+
+;; (use-package wgrep-ag
+;;   :ensure t
+;;   )
 (use-package helm-ag
   :ensure t
   :bind ("C-S-p" . helm-projectile-ag)
@@ -429,3 +468,126 @@ If the new path's directories does not exist, create them."
   :init (
          setq helm-ag-insert-at-point 'symbol
               helm-ag-command-option "--path-to-ignore ~/.agignore"))
+(setq-default bidi-display-reordering nil)
+(setq bidi-paragraph-direction 'left-to-right)
+
+(put 'dired-find-alternate-file 'disabled nil)
+(use-package zig-mode  :ensure t)
+(use-package rust-mode  :ensure t)
+
+ (when (require 'so-long nil :noerror)
+   (global-so-long-mode 1))
+(put 'upcase-region 'disabled nil)
+
+(use-package org-ref  :ensure t)
+(use-package interleave :ensure t)
+
+(global-set-key (kbd "C-c c") 'org-capture)
+(setq org-default-notes-file "~/sync/org/Inbox.org")
+(setq org-agenda-files (list "~/sync/org/Inbox.org"))
+;;(setq org-ref-notes-directory "~/sync/org/references/notes"
+      ;; org-ref-bibliography-notes "~/sync/org/references/articles.org"
+      ;; org-ref-default-bibliography '("~/sync/org/references/articles.bib")
+      ;; org-ref-pdf-directory "~/sync/org/references/pdfs/")
+
+
+  (defun my/org-contacts-template-email (&optional return-value)
+    "Try to return the contact email for a template.
+  If not found return RETURN-VALUE or something that would ask the user."
+    (or (cadr (if (gnus-alive-p)
+                  (gnus-with-article-headers
+                    (mail-extract-address-components
+                     (or (mail-fetch-field "Reply-To") (mail-fetch-field "From") "")))))
+        return-value
+        (concat "%^{" org-contacts-email-property "}p")))
+
+
+(defvar my/org-basic-task-template "* TODO %^{Task}
+:PROPERTIES:
+:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}
+:END:
+Captured %<%Y-%m-%d %H:%M>
+%?
+
+%i
+" "Basic task data")
+(defvar my/org-inbox-file "~/sync/org/Inbox.org")
+(setq org-capture-templates
+  `(("t" "Quick task" entry
+      (file ,my/org-inbox-file)
+      "* TODO %^{Task}\n"
+      :immediate-finish t)
+     ("T" "Task" entry
+       (file ,my/org-inbox-file)
+       "* TODO %^{Task}\n")
+     ("." "Today" entry
+       (file ,my/org-inbox-file)
+       "* TODO %^{Task}\nSCHEDULED: %t\n"
+       :immediate-finish t)
+     ("v" "Video" entry
+       (file ,my/org-inbox-file)
+       "* TODO %^{Task}  :video:\nSCHEDULED: %t\n"
+       :immediate-finish t)
+     ("e" "Errand" entry
+       (file ,my/org-inbox-file)
+       "* TODO %^{Task}  :errands:\n"
+       :immediate-finish t)
+     ("w" "Something to write about" entry
+       (file ,my/org-inbox-file)
+       "* %^{Task}  :writing:\n"
+       :immediate-finish t)
+     ("n" "Note" entry
+       (file ,my/org-inbox-file)
+       "* %^{Note}\n"
+       :immediate-finish t)
+     ("N" "Note" entry
+       (file ,my/org-inbox-file)
+       "* %^{Note}\n")
+     ("i" "Interrupting task" entry
+       (file ,my/org-inbox-file)
+       "* STARTED %^{Task}"
+       :clock-in :clock-resume)
+     ("b" "Business task" entry
+       (file+headline "~/sync/org/business.org" "Tasks")
+       ,my/org-basic-task-template)
+     ("p" "People task" entry
+       (file "~/sync/org/people.org")
+       ,my/org-basic-task-template)
+     ("c" "Protocol Link" entry (file+headline ,org-default-notes-file "Inbox")
+       "* [[%:link][%:description]] \n\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n%?\n\nCaptured: %U")
+     ("db" "Done - Business" entry
+       (file+headline "~/sync/org/business.org" "Tasks")
+       "* DONE %^{Task}\nSCHEDULED: %^t\n%?")
+     ("dp" "Done - People" entry
+       (file+headline "~/sync/org/people.org" "Tasks")
+       "* DONE %^{Task}\nSCHEDULED: %^t\n%?")
+     ("dt" "Done - Task" entry
+       (file+headline "~/sync/org/organizer.org" "Inbox")
+       "* DONE %^{Task}\nSCHEDULED: %^t\n%?")
+     ("q" "Quick note" item
+       (file+headline "~/sync/org/organizer.org" "Quick notes"))
+     ("C" "Contact" entry (file "~/sync/org/contacts.org")
+       "* %(org-contacts-template-name)
+  :PROPERTIES:
+  :EMAIL: %(my/org-contacts-template-email)
+  :END:")))
+(bind-key "C-M-r" 'org-capture)
+(bind-key (kbd "<f5>") 'org-capture)
+
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+(setq projectile-mode-line
+         '(:eval (format " Projectile[%s]"
+                        (projectile-project-name))))
+(use-package helm-ls-git
+  :ensure t
+  :init
+
+  (global-set-key (kbd "C-p") 'helm-browse-project)
+  (global-set-key (kbd "C-\"") 'helm-projects-history)
+  )

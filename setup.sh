@@ -8,17 +8,18 @@ do
     if [ -d ~/$i ]
     then
         echo "deleting..." $(realpath ~/$i)
-        rm -rI ~/$i
-        echo "linking..."  $(realpath ./$i) $(realpath ~/$i)
-        ln -s $(realpath ./$i) $(realpath ~/$i)
+        rm -r ~/$i
     fi
+    echo "linking..."  $(realpath ./$i) $(realpath ~/$i)
+    ln -s $(realpath ./$i) $(realpath ~/$i)
+    
     if [ -f ~/$i ]
     then
-        echo "deleting..." $(realpath ~/$i)
-        rm -rI ~/$i
-        echo "linking..." $(realpath ./$i)
-        ln -s $(realpath ./$i) $(realpath ~/$i)
+        echo "deleting file ..." $(realpath ~/$i)
+        rm -r ~/$i
     fi
+    echo "linking..." $(realpath ./$i)
+    ln -s $(realpath ./$i) $(realpath ~/$i)
 done
 
 for i in .config/*
@@ -27,14 +28,15 @@ do
     then
         echo "deleting..." $(realpath ~/$i)
         rm -rI ~/$i
-        echo "linking..."  $(realpath ./$i) $(realpath ~/$i)
-        ln -s $(realpath ./$i) $(realpath ~/$i)
     fi
+    echo "linking..."  $(realpath ./$i) $(realpath ~/$i)
+    ln -s $(realpath ./$i) $(realpath ~/$i)
+
     if [ -f ~/$i ]
     then
         echo "deleting..." $(realpath ~/$i)
         rm -rI ~/$i
-        echo "linking..." $(realpath ./$i)
-        ln -s $(realpath ./$i) $(realpath ~/$i)
     fi
+    echo "linking..." $(realpath ./$i)
+    ln -s $(realpath ./$i) $(realpath ~/$i)
 done

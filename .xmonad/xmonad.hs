@@ -490,8 +490,8 @@ scratchpads =
 -- Theme                                                                {{{
 ---------------------------------------------------------------------------
 
-myFocusFollowsMouse  = False
-myClickJustFocuses   = True
+myFocusFollowsMouse  = True
+myClickJustFocuses   = False
 
 base03  = "#002b36"
 base02  = "#073642"
@@ -1583,7 +1583,7 @@ myLogHook h = do
 
 myFadeHook = composeAll
     [ opaque -- default to opaque
-    , isUnfocused --> opacity 0.85
+    , isUnfocused --> opacity 1
     , (className =? "Terminator") <&&> (isUnfocused) --> opacity 0.9
     , (className =? "Kitty") <&&> (isUnfocused) --> opacity 0.9
     , fmap ("Google" `isPrefixOf`) className --> opaque
